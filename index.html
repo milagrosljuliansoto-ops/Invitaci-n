@@ -54,12 +54,24 @@
     pointer-events: none;
   }
 
-  /* GIF animado más chiquito en la esquina superior derecha */
-  .corner-gif {
+  /* GIF arriba a la derecha (agrandado un poquis: 120px) */
+  .gif-top-right {
     position: fixed;
     top: 15px;
     right: 15px;
-    width: 90px;
+    width: 120px;
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+  }
+
+  /* GIF abajo a la izquierda */
+  .gif-bottom-left {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    width: 120px;
     height: auto;
     z-index: 3;
     pointer-events: none;
@@ -305,18 +317,6 @@
     margin:10px 0 4px;
   }
 
-  /* Contenedor elegante para el reproductor de Spotify sin anuncios molestos */
-  .spotify-container {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    z-index: 10;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 3px solid var(--ink);
-    box-shadow: 4px 4px 0 var(--ink);
-  }
-
   @media (prefers-reduced-motion: reduce){
     .confetti-piece{ animation:none !important; }
   }
@@ -324,13 +324,17 @@
 </head>
 <body>
 
-  <!-- GIF animado chiquito en la esquina superior -->
-  <img src="https://media.giphy.com/media/6GfyBJHx5qmJy/giphy.gif" class="corner-gif" alt="Spider-Man Gif">
+  <!-- GIF animado arriba a la derecha (más grande) -->
+  <img src="https://i.pinimg.com/originals/10/b9/79/10b97973007e0802a548ee36575e67dd.gif" class="gif-top-right" alt="Spider-Man Gif">
 
-  <!-- Reproductor de Spotify limpio (Canción Sunflower sin anuncios de video de YouTube) -->
-  <div class="spotify-container">
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0RiRZpuVRbi7oqRdSMwhQY?utm_source=generator&theme=0" width="250" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-  </div>
+  <!-- GIF animado abajo a la izquierda -->
+  <img src="https://i.pinimg.com/originals/10/b9/79/10b97973007e0802a548ee36575e67dd.gif" class="gif-bottom-left" alt="Spider-Man Gif">
+
+  <!-- Audio de fondo con reproducción instantánea (Autoplay) -->
+  <!-- Nota: Puedes cambiar el enlace de abajo por cualquier archivo MP3 directo de tu preferencia -->
+  <audio autoplay loop id="backgroundAudio">
+    <source src="https://www.bensound.com/bensound-music/bensound-cute.mp3" type="audio/mp3">
+  </audio>
 
   <main class="screen" id="screenInvite">
     <p class="eyebrow">Alerta arácnida</p>
