@@ -9,11 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 
-  /* ======================================================
-     ESTOS VALORES SE SOBREESCRIBEN AUTOMÁTICAMENTE
-     CON EL OBJETO "CONFIG" DEL SCRIPT. NO ES NECESARIO
-     TOCAR ESTO A MANO.
-     ====================================================== */
+ 
   :root{
     --bg1:#C41E28;
     --bg2:#122C6B;
@@ -405,8 +401,6 @@
   </svg>
 
   <button class="editor-toggle" id="editorToggle" title="Editar invitación">⚙️</button>
-
-  <!-- ===================== PANEL DE EDICIÓN ===================== -->
   <div class="editor-panel hidden" id="editorPanel">
     <h2>Personalizar invitación</h2>
     <p class="note">Los cambios se ven al instante aquí abajo (vista previa). Cuando quede como quieres, pídele a Claude que los deje guardados en el archivo final, o edítalos tú mismo/a en el objeto <code>CONFIG</code> al inicio del &lt;script&gt;.</p>
@@ -458,7 +452,7 @@
 
     <label for="inpBgImg">Imagen de fondo (URL, opcional)</label>
     <input type="url" id="inpBgImg" placeholder="https://...">
-    <p class="note" style="margin:6px 0 0;">Debe ser un enlace directo a la imagen (termina en .jpg, .png, etc). Un link de Google Fotos, Instagram o Pinterest no funciona. Si tienes dudas, sube la foto en el chat y pídele a Claude que la incruste.</p>
+    <p class="note" style="margin:6px 0 0;">Debe ser un enlace directo a la imagen (termina en .jpg, .png, etc)
 
     <label for="inpBtnSi">Texto del botón "Sí"</label>
     <input type="text" id="inpBtnSi">
@@ -481,7 +475,6 @@
     </div>
   </div>
 
-  <!-- ===================== PANTALLA 1: INVITACIÓN ===================== -->
   <main class="screen" id="screenInvite">
     <p class="eyebrow">Alerta arácnida</p>
     <h1 id="headline"></h1>
@@ -497,14 +490,12 @@
     <p class="hint" id="hintText"></p>
   </main>
 
-  <!-- ===================== PANTALLA 2: ELEGIR DÍA ===================== -->
   <main class="screen hidden" id="screenDay">
     <p class="eyebrow">¡Ya casi!</p>
     <h1 id="preguntaDiaText"></h1>
     <div class="buttons" id="diasWrap"></div>
   </main>
 
-  <!-- ===================== PANTALLA 3: ÉXITO ===================== -->
   <main class="screen hidden" id="screenSuccess">
     <p class="eyebrow">¡Sentido arácnido confirmado!</p>
     <div class="success-badge">¡THWIP!</div>
@@ -513,7 +504,6 @@
     <img id="successImg" class="success-img hidden" alt="">
   </main>
 
-  <!-- ===================== MODAL "NO" ===================== -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal">
       <p id="modalMsg"></p>
@@ -522,9 +512,7 @@
   </div>
 
 <script>
-/* ============================================================
-   CONFIGURACIÓN — edita libremente estos valores
-   ============================================================ */
+
 const CONFIG = {
   saludo: "Hola Luis, sé que se viene una fecha súper importante y quería preguntarte si nos animamos a salir a celebrarla.",
   hora: "8:30 pm",
@@ -555,10 +543,6 @@ const CONFIG = {
 
   mensajeExito: "Nos vemos pronto 🕷️"
 };
-
-/* ============================================================
-   ESTADO Y ELEMENTOS
-   ============================================================ */
 let intentosNo = 0;
 let diaElegido = "";
 const root = document.documentElement;
@@ -586,12 +570,7 @@ const els = {
   buttonsWrap: document.querySelector('#screenInvite .buttons'),
 };
 
-/* ============================================================
-   GUARDADO PERSISTENTE
-   Usa el almacenamiento de artifacts si está disponible (dentro de
-   Claude); si el archivo se abre como HTML normal en un navegador,
-   usa localStorage. Así los cambios del panel ⚙️ quedan guardados.
-   ============================================================ */
+
 const STORAGE_KEY = 'invitacion-config-luis';
 
 async function guardarConfig(){
@@ -620,9 +599,6 @@ async function cargarConfig(){
   }
 }
 
-/* ============================================================
-   RENDER: aplica CONFIG a la página
-   ============================================================ */
 function render(){
   root.style.setProperty('--bg1', CONFIG.colorFondo1);
   root.style.setProperty('--bg2', CONFIG.colorFondo2);
@@ -671,9 +647,6 @@ function render(){
   els.hintText.textContent = '';
 }
 
-/* ============================================================
-   LÓGICA "NO": esquiva un poco y abre el modal con mensajes
-   ============================================================ */
 const puedeHover = window.matchMedia('(hover: hover)').matches;
 const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -727,9 +700,6 @@ function elegirDia(dia){
   lanzarConfeti();
 }
 
-/* ============================================================
-   CONFETI
-   ============================================================ */
 function lanzarConfeti(){
   if(prefiereMenosMovimiento) return;
   const colores = [CONFIG.colorAcento, CONFIG.colorSecundario, '#ffffff'];
@@ -751,9 +721,7 @@ function lanzarConfeti(){
   }
 }
 
-/* ============================================================
-   PANEL DE EDICIÓN
-   ============================================================ */
+
 const editorToggle = document.getElementById('editorToggle');
 const editorPanel = document.getElementById('editorPanel');
 const inp = {
