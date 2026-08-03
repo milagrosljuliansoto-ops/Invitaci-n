@@ -26,9 +26,11 @@
     font-family:'Poppins', sans-serif;
     color:var(--text);
     overflow-x:hidden;
+    /* Cursor personalizado de Spider-Man chiquito */
+    cursor: url('https://cdn-icons-png.flaticon.com/24/3468/3468377.png'), auto;
   }
 
-  /* Fondo con GIF animado y capa de color para que resalte la tarjeta */
+  /* Fondo oscuro original con telarañas y capa de color */
   body{
     min-height:100vh;
     display:flex;
@@ -36,7 +38,7 @@
     justify-content:center;
     position:relative;
     padding:24px;
-    background-image: url("https://media.giphy.com/media/6GfyBJHx5qmJy/giphy.gif");
+    background-image: url("https://img.magnific.com/vector-gratis/estilo-fondo-telarana-halloween_23-2148626623.jpg");
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -47,9 +49,21 @@
     content:"";
     position:fixed;
     inset:0;
-    background:linear-gradient(135deg, rgba(196,30,40,.65), rgba(18,44,107,.75));
+    background:linear-gradient(135deg, rgba(196,30,40,.5), rgba(18,44,107,.65));
     z-index:0;
     pointer-events: none;
+  }
+
+  /* GIF animado más chiquito en la esquina superior derecha */
+  .corner-gif {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 90px;
+    height: auto;
+    z-index: 3;
+    pointer-events: none;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
   }
 
   .screen{
@@ -87,7 +101,6 @@
     margin:0 0 16px;
   }
 
-  /* Título principal en grande con fuente Bangers */
   h1{
     font-family:'Bangers', cursive;
     font-weight:400;
@@ -163,7 +176,7 @@
     border:3px solid var(--ink);
     border-radius:999px;
     padding:15px 30px;
-    cursor:pointer;
+    cursor: pointer;
     transition:transform .18s ease, box-shadow .18s ease, font-size .2s ease, padding .2s ease;
     box-shadow:4px 4px 0 var(--ink);
     text-decoration: none;
@@ -251,7 +264,7 @@
     padding:11px 26px;
     background:var(--accent);
     color:#fff;
-    cursor:pointer;
+    cursor: pointer;
     box-shadow:3px 3px 0 var(--ink);
   }
 
@@ -292,27 +305,16 @@
     margin:10px 0 4px;
   }
 
-  /* Botón flotante para la música por si el navegador bloquea la reproducción automática */
-  .music-control {
+  /* Contenedor elegante para el reproductor de Spotify sin anuncios molestos */
+  .spotify-container {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 15px;
+    left: 15px;
     z-index: 10;
-    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
     border: 3px solid var(--ink);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
     box-shadow: 4px 4px 0 var(--ink);
-    font-size: 22px;
-    transition: transform 0.2s;
-  }
-  .music-control:hover {
-    transform: scale(1.1);
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -322,13 +324,13 @@
 </head>
 <body>
 
-  <!-- Reproductor de YouTube oculto para que suene Sunflower -->
-  <div style="display:none;">
-    <iframe id="youtubeAudio" width="300" height="150" src="https://www.youtube.com/embed/ApXoWvfEYVU?autoplay=1&loop=1&playlist=ApXoWvfEYVU" frameborder="0" allow="autoplay"></iframe>
-  </div>
+  <!-- GIF animado chiquito en la esquina superior -->
+  <img src="https://media.giphy.com/media/6GfyBJHx5qmJy/giphy.gif" class="corner-gif" alt="Spider-Man Gif">
 
-  <!-- Botón flotante de música -->
-  <div class="music-control" id="musicToggle" title="Pausar/Reproducir música">🎵</div>
+  <!-- Reproductor de Spotify limpio (Canción Sunflower sin anuncios de video de YouTube) -->
+  <div class="spotify-container">
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0RiRZpuVRbi7oqRdSMwhQY?utm_source=generator&theme=0" width="250" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
 
   <main class="screen" id="screenInvite">
     <p class="eyebrow">Alerta arácnida</p>
@@ -380,8 +382,6 @@ const CONFIG = {
   preguntaDia: "Elige el día:",
   diasOpciones: ["19 de agosto", "20 de agosto"],
 
-  colorFondo1: "#C41E28",
-  colorFondo2: "#122C6B",
   colorAcento: "#E8232A",
   colorTexto: "#151223",
   colorSecundario: "#1450C4",
@@ -428,8 +428,6 @@ const els = {
   modalBack: document.getElementById('modalBack'),
   buttonsWrap: document.querySelector('#screenInvite .buttons'),
   btnCalendar: document.getElementById('btnCalendar'),
-  musicToggle: document.getElementById('musicToggle'),
-  youtubeAudio: document.getElementById('youtubeAudio'),
 };
 
 function render(){
@@ -470,20 +468,6 @@ function render(){
   els.btnNo.style.padding = '';
   els.hintText.textContent = '';
 }
-
-// Control del botón de música
-let musicaActiva = true;
-els.musicToggle.addEventListener('click', () => {
-  if (musicaActiva) {
-    els.youtubeAudio.src = "";
-    els.musicToggle.textContent = "🔇";
-    musicaActiva = false;
-  } else {
-    els.youtubeAudio.src = "https://www.youtube.com/embed/ApXoWvfEYVU?autoplay=1&loop=1&playlist=ApXoWvfEYVU";
-    els.musicToggle.textContent = "🎵";
-    musicaActiva = true;
-  }
-});
 
 const puedeHover = window.matchMedia('(hover: hover)').matches;
 const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
