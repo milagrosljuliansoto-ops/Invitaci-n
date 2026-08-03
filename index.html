@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una pregunta para ti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  /* ======================================================
+     ESTOS VALORES SE SOBREESCRIBEN AUTOMÁTICAMENTE
+     CON EL OBJETO "CONFIG" DEL SCRIPT. NO ES NECESARIO
+     TOCAR ESTO A MANO.
+     ====================================================== */
+  :root{
+    --bg1:#C41E28;
+    --bg2:#122C6B;
+    --accent:#E8232A;
+    --text:#151223;
+    --secondary:#1450C4;
+    --ink:#0B0B12;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    font-family:'Poppins', sans-serif;
+    color:var(--text);
+    overflow-x:hidden;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    padding:24px;
+    background:
+      linear-gradient(135deg, var(--bg1) 0%, var(--bg1) 46%, var(--bg2) 54%, var(--bg2) 100%);
+    background-attachment:fixed;
+  }
+
+  /* puntos de cómic (halftone) */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image: radial-gradient(rgba(255,255,255,.16) 2px, transparent 2.4px);
+    background-size:16px 16px;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  body.has-image{
+    background-image: var(--bg-image);
+    background-size:cover;
+    background-position:center;
+  }
+  body.has-image::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg, rgba(196,30,40,.55), rgba(18,44,107,.6));
+    z-index:0;
+  }
+
+  /* telarañas decorativas en las esquinas, dibujadas en SVG (arte original) */
+  .web{
+    position:fixed;
+    width:230px;
+    height:230px;
+    z-index:0;
+    opacity:.35;
+    pointer-events:none;
+  }
+  .web-tl{ top:-20px; left:-20px; }
+  .web-br{ bottom:-20px; right:-20px; transform:rotate(180deg); }
+
+  .screen{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:480px;
+    background:#FBF6EC;
+    border:5px solid var(--ink);
+    border-radius:20px;
+    padding:44px 32px;
+    text-align:center;
+    box-shadow:10px 10px 0 var(--ink);
+  }
+
+  .hidden{ display:none !important; }
+
+  .eyebrow{
+    display:inline-block;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    font-size:.72rem;
+    font-weight:700;
+    color:#fff;
+    background:var(--secondary);
+    border:2px solid var(--ink);
+    border-radius:999px;
+    padding:5px 14px;
+    margin:0 0 16px;
+  }
+
+  h1{
+    font-family:'Bangers', cursive;
+    font-weight:400;
+    letter-spacing:.03em;
+    font-size:clamp(1.7rem, 6.4vw, 2.5rem);
+    line-height:1.2;
+    margin:0 0 18px;
+    color:var(--accent);
+    -webkit-text-stroke:1.2px var(--ink);
+    text-shadow:2px 2px 0 var(--ink);
+  }
+
+  .detalles{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin:0 0 22px;
+  }
+  .detalle{
+    background:#fff;
+    border:2.5px solid var(--ink);
+    border-radius:14px;
+    padding:10px 16px;
+    text-align:left;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .detalle .k{
+    display:block;
+    font-size:.66rem;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--secondary);
+    margin-bottom:2px;
+  }
+  .detalle .v{
+    font-size:.95rem;
+    font-weight:700;
+    color:var(--text);
+  }
+
+  .subfrase{
+    font-size:1.02rem;
+    font-weight:600;
+    color:var(--text);
+    opacity:.85;
+    margin:0 0 26px;
+  }
+
+  .buttons{
+    position:relative;
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    min-height:74px;
+  }
+
+  .btn{
+    font-family:'Poppins', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:15px 30px;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, font-size .2s ease, padding .2s ease;
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  .btn:focus-visible{
+    outline:3px solid var(--secondary);
+    outline-offset:3px;
+  }
+  .btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
+
+  .btn-si{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn-si:hover{ transform:translateY(-2px); }
+
+  .btn-no{
+    background:var(--secondary);
+    color:#fff;
+    position:relative;
+  }
+  .btn-no:hover{ transform:translateY(-2px); }
+
+  .btn-dia{
+    background:#fff;
+    color:var(--text);
+  }
+  .btn-dia:hover{ transform:translateY(-2px); background:var(--secondary); color:#fff; }
+
+  .hint{
+    margin:20px 0 0;
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--secondary);
+    min-height:1.2em;
+  }
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:5;
+    background:rgba(11,11,18,.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    animation:fadeIn .18s ease;
+  }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+  .modal{
+    background:#fff;
+    border:5px solid var(--ink);
+    border-radius:20px;
+    padding:30px 26px;
+    max-width:380px;
+    text-align:center;
+    box-shadow:8px 8px 0 var(--ink);
+    animation:pop .22s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.85); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+  .modal p{
+    font-size:1.05rem;
+    font-weight:700;
+    margin:0 0 20px;
+  }
+
+  .modal button{
+    font-family:'Poppins', sans-serif;
+    font-weight:700;
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:11px 26px;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+
+  /* Confeti (rojo / azul / blanco) */
+  .confetti-piece{
+    position:fixed;
+    top:-20px;
+    z-index:6;
+    border-radius:2px;
+    pointer-events:none;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(540deg); opacity:.9; }
+  }
+
+  .success-badge{
+    font-family:'Bangers', cursive;
+    font-size:clamp(2.4rem, 9vw, 3.4rem);
+    color:var(--accent);
+    -webkit-text-stroke:1.6px var(--ink);
+    text-shadow:3px 3px 0 var(--ink);
+    margin:6px 0 14px;
+    letter-spacing:.03em;
+  }
+
+  .recap{
+    font-size:.92rem;
+    font-weight:600;
+    color:var(--secondary);
+    margin:-6px 0 4px;
+  }
+
+  .success-img{
+    max-width:100%;
+    border-radius:14px;
+    border:4px solid var(--ink);
+    margin:10px 0 4px;
+  }
+
+  /* Panel editor */
+  .editor-toggle{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:10;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:3px solid var(--ink);
+    background:#fff;
+    box-shadow:3px 3px 0 var(--ink);
+    font-size:1.15rem;
+    cursor:pointer;
+  }
+
+  .editor-panel{
+    position:fixed;
+    top:0;
+    right:0;
+    bottom:0;
+    width:min(340px, 92vw);
+    background:#fff;
+    z-index:11;
+    box-shadow:-12px 0 40px -10px rgba(0,0,0,.3);
+    overflow-y:auto;
+    padding:24px 20px 40px;
+    font-family:'Poppins', sans-serif;
+    border-left:5px solid var(--ink);
+  }
+  .editor-panel h2{
+    font-family:'Bangers', cursive;
+    font-size:1.4rem;
+    letter-spacing:.03em;
+    color:var(--accent);
+    margin:0 0 4px;
+  }
+  .editor-panel .note{
+    font-size:.78rem;
+    opacity:.65;
+    margin:0 0 20px;
+    line-height:1.4;
+  }
+  .editor-panel label{
+    display:block;
+    font-size:.78rem;
+    font-weight:700;
+    margin:14px 0 5px;
+    color:var(--secondary);
+  }
+  .editor-panel input[type="text"],
+  .editor-panel input[type="url"],
+  .editor-panel textarea{
+    width:100%;
+    padding:9px 10px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-family:'Poppins', sans-serif;
+    font-size:.9rem;
+  }
+  .editor-panel input[type="color"]{
+    width:100%;
+    height:36px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:2px;
+  }
+  .editor-panel textarea{ min-height:70px; resize:vertical; }
+  .editor-row{ display:flex; gap:10px; }
+  .editor-row > div{ flex:1; }
+
+  .editor-actions{
+    display:flex;
+    gap:10px;
+    margin-top:24px;
+  }
+  .editor-actions button{
+    flex:1;
+    padding:11px;
+    border-radius:10px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    font-family:'Poppins', sans-serif;
+  }
+  .btn-apply{ background:var(--accent); color:#fff; }
+  .btn-close{ background:#eee; color:var(--text); }
+
+  @media (prefers-reduced-motion: reduce){
+    .confetti-piece{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <svg class="web web-tl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="1.4" fill="none">
+    <path d="M0,0 L200,200 M0,40 L120,200 M0,80 L70,200 M40,0 L200,120 M80,0 L200,70"/>
+    <path d="M0,10 Q60,30 90,90 Q110,120 200,150"/>
+    <path d="M0,30 Q40,55 60,110 Q90,150 200,190"/>
+    <path d="M10,0 Q30,60 90,90 Q120,110 150,200"/>
+  </svg>
+  <svg class="web web-br" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="1.4" fill="none">
+    <path d="M0,0 L200,200 M0,40 L120,200 M0,80 L70,200 M40,0 L200,120 M80,0 L200,70"/>
+    <path d="M0,10 Q60,30 90,90 Q110,120 200,150"/>
+    <path d="M0,30 Q40,55 60,110 Q90,150 200,190"/>
+    <path d="M10,0 Q30,60 90,90 Q120,110 150,200"/>
+  </svg>
+
+  <button class="editor-toggle" id="editorToggle" title="Editar invitación">⚙️</button>
+
+  <!-- ===================== PANEL DE EDICIÓN ===================== -->
+  <div class="editor-panel hidden" id="editorPanel">
+    <h2>Personalizar invitación</h2>
+    <p class="note">Los cambios se ven al instante aquí abajo (vista previa). Cuando quede como quieres, pídele a Claude que los deje guardados en el archivo final, o edítalos tú mismo/a en el objeto <code>CONFIG</code> al inicio del &lt;script&gt;.</p>
+
+    <label for="inpSaludo">Saludo / mensaje principal</label>
+    <textarea id="inpSaludo"></textarea>
+
+    <div class="editor-row">
+      <div>
+        <label for="inpHora">Hora</label>
+        <input type="text" id="inpHora">
+      </div>
+      <div>
+        <label for="inpLugar">Dónde</label>
+        <input type="text" id="inpLugar">
+      </div>
+    </div>
+
+    <label for="inpPregunta">Pregunta ("¿Aceptas mi invitación?")</label>
+    <input type="text" id="inpPregunta">
+
+    <label for="inpPreguntaDia">Pregunta del día</label>
+    <input type="text" id="inpPreguntaDia">
+
+    <label for="inpDias">Opciones de día (una por línea)</label>
+    <textarea id="inpDias"></textarea>
+
+    <div class="editor-row">
+      <div>
+        <label for="inpBg1">Color fondo 1</label>
+        <input type="color" id="inpBg1">
+      </div>
+      <div>
+        <label for="inpBg2">Color fondo 2</label>
+        <input type="color" id="inpBg2">
+      </div>
+    </div>
+
+    <div class="editor-row">
+      <div>
+        <label for="inpAccent">Color acento (botón Sí)</label>
+        <input type="color" id="inpAccent">
+      </div>
+      <div>
+        <label for="inpSecondary">Color secundario</label>
+        <input type="color" id="inpSecondary">
+      </div>
+    </div>
+
+    <label for="inpBgImg">Imagen de fondo (URL, opcional)</label>
+    <input type="url" id="inpBgImg" placeholder="https://...">
+    <p class="note" style="margin:6px 0 0;">Debe ser un enlace directo a la imagen (termina en .jpg, .png, etc). Un link de Google Fotos, Instagram o Pinterest no funciona. Si tienes dudas, sube la foto en el chat y pídele a Claude que la incruste.</p>
+
+    <label for="inpBtnSi">Texto del botón "Sí"</label>
+    <input type="text" id="inpBtnSi">
+
+    <label for="inpBtnNo">Texto del botón "No"</label>
+    <input type="text" id="inpBtnNo">
+
+    <label for="inpMensajesNo">Mensajes al presionar "No" (uno por línea)</label>
+    <textarea id="inpMensajesNo"></textarea>
+
+    <label for="inpMensajeExito">Mensaje de éxito</label>
+    <input type="text" id="inpMensajeExito">
+
+    <label for="inpImgExito">Imagen/GIF de éxito (URL, opcional)</label>
+    <input type="url" id="inpImgExito" placeholder="https://...">
+
+    <div class="editor-actions">
+      <button class="btn-apply" id="btnAplicar">Aplicar cambios</button>
+      <button class="btn-close" id="btnCerrarPanel">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ===================== PANTALLA 1: INVITACIÓN ===================== -->
+  <main class="screen" id="screenInvite">
+    <p class="eyebrow">Alerta arácnida</p>
+    <h1 id="headline"></h1>
+    <div class="detalles">
+      <div class="detalle"><span class="k">Hora</span><span class="v" id="detalleHora"></span></div>
+      <div class="detalle"><span class="k">Dónde</span><span class="v" id="detalleLugar"></span></div>
+    </div>
+    <p class="subfrase" id="preguntaText"></p>
+    <div class="buttons">
+      <button class="btn btn-si" id="btnSi"></button>
+      <button class="btn btn-no" id="btnNo"></button>
+    </div>
+    <p class="hint" id="hintText"></p>
+  </main>
+
+  <!-- ===================== PANTALLA 2: ELEGIR DÍA ===================== -->
+  <main class="screen hidden" id="screenDay">
+    <p class="eyebrow">¡Ya casi!</p>
+    <h1 id="preguntaDiaText"></h1>
+    <div class="buttons" id="diasWrap"></div>
+  </main>
+
+  <!-- ===================== PANTALLA 3: ÉXITO ===================== -->
+  <main class="screen hidden" id="screenSuccess">
+    <p class="eyebrow">¡Sentido arácnido confirmado!</p>
+    <div class="success-badge">¡THWIP!</div>
+    <p class="recap" id="recapText"></p>
+    <h1 id="successHeadline"></h1>
+    <img id="successImg" class="success-img hidden" alt="">
+  </main>
+
+  <!-- ===================== MODAL "NO" ===================== -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal">
+      <p id="modalMsg"></p>
+      <button id="modalBack">Volver a elegir</button>
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — edita libremente estos valores
+   ============================================================ */
+const CONFIG = {
+  saludo: "Hola Luis, sé que se viene una fecha súper importante y quería preguntarte si nos animamos a salir a celebrarla.",
+  hora: "8:30 pm",
+  lugar: "Ancón",
+  preguntaAceptar: "¿Aceptas mi invitación?",
+  preguntaDia: "Bueno, ahora elegí el día:",
+  diasOpciones: ["19 de agosto", "20 de agosto"],
+
+  colorFondo1: "#C41E28",
+  colorFondo2: "#122C6B",
+  colorAcento: "#E8232A",
+  colorTexto: "#151223",
+  colorSecundario: "#1450C4",
+
+  imagenFondo: "",   // URL opcional de imagen de fondo
+  imagenExito: "",   // URL opcional de imagen/GIF para la pantalla final
+
+  textoBotonSi: "Sí",
+  textoBotonNo: "No",
+
+  mensajesNo: [
+    "Ni el hombre araña esquiva tan rápido como tú al 'sí' 😏",
+    "Inténtalo de nuevo, esa no era la respuesta correcta.",
+    "Tu sentido arácnido te está fallando, prueba otra vez.",
+    "Última oportunidad para elegir bien 👀",
+    "Ok, pero en el fondo ya sabes cuál es el sí."
+  ],
+
+  mensajeExito: "Nos vemos pronto 🕷️"
+};
+
+/* ============================================================
+   ESTADO Y ELEMENTOS
+   ============================================================ */
+let intentosNo = 0;
+let diaElegido = "";
+const root = document.documentElement;
+const body = document.body;
+
+const els = {
+  headline: document.getElementById('headline'),
+  detalleHora: document.getElementById('detalleHora'),
+  detalleLugar: document.getElementById('detalleLugar'),
+  preguntaText: document.getElementById('preguntaText'),
+  btnSi: document.getElementById('btnSi'),
+  btnNo: document.getElementById('btnNo'),
+  hintText: document.getElementById('hintText'),
+  screenInvite: document.getElementById('screenInvite'),
+  screenDay: document.getElementById('screenDay'),
+  preguntaDiaText: document.getElementById('preguntaDiaText'),
+  diasWrap: document.getElementById('diasWrap'),
+  screenSuccess: document.getElementById('screenSuccess'),
+  recapText: document.getElementById('recapText'),
+  successHeadline: document.getElementById('successHeadline'),
+  successImg: document.getElementById('successImg'),
+  modalOverlay: document.getElementById('modalOverlay'),
+  modalMsg: document.getElementById('modalMsg'),
+  modalBack: document.getElementById('modalBack'),
+  buttonsWrap: document.querySelector('#screenInvite .buttons'),
+};
+
+/* ============================================================
+   GUARDADO PERSISTENTE
+   Usa el almacenamiento de artifacts si está disponible (dentro de
+   Claude); si el archivo se abre como HTML normal en un navegador,
+   usa localStorage. Así los cambios del panel ⚙️ quedan guardados.
+   ============================================================ */
+const STORAGE_KEY = 'invitacion-config-luis';
+
+async function guardarConfig(){
+  try{
+    if(window.storage){
+      await window.storage.set(STORAGE_KEY, JSON.stringify(CONFIG), false);
+    } else if(window.localStorage){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
+    }
+  }catch(e){
+    console.warn('No se pudo guardar la configuración:', e);
+  }
+}
+
+async function cargarConfig(){
+  try{
+    if(window.storage){
+      const res = await window.storage.get(STORAGE_KEY);
+      if(res && res.value) Object.assign(CONFIG, JSON.parse(res.value));
+    } else if(window.localStorage){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) Object.assign(CONFIG, JSON.parse(raw));
+    }
+  }catch(e){
+    // no hay datos guardados todavía, o falló la lectura: se usan los valores por defecto
+  }
+}
+
+/* ============================================================
+   RENDER: aplica CONFIG a la página
+   ============================================================ */
+function render(){
+  root.style.setProperty('--bg1', CONFIG.colorFondo1);
+  root.style.setProperty('--bg2', CONFIG.colorFondo2);
+  root.style.setProperty('--accent', CONFIG.colorAcento);
+  root.style.setProperty('--text', CONFIG.colorTexto);
+  root.style.setProperty('--secondary', CONFIG.colorSecundario);
+
+  if(CONFIG.imagenFondo){
+    root.style.setProperty('--bg-image', `url("${CONFIG.imagenFondo}")`);
+    body.classList.add('has-image');
+  } else {
+    body.classList.remove('has-image');
+  }
+
+  els.headline.textContent = CONFIG.saludo;
+  els.detalleHora.textContent = CONFIG.hora;
+  els.detalleLugar.textContent = CONFIG.lugar;
+  els.preguntaText.textContent = CONFIG.preguntaAceptar;
+  els.btnSi.textContent = CONFIG.textoBotonSi;
+  els.btnNo.textContent = CONFIG.textoBotonNo;
+
+  els.preguntaDiaText.textContent = CONFIG.preguntaDia;
+  els.diasWrap.innerHTML = '';
+  CONFIG.diasOpciones.forEach(dia => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-dia';
+    b.textContent = dia;
+    b.addEventListener('click', () => elegirDia(dia));
+    els.diasWrap.appendChild(b);
+  });
+
+  els.successHeadline.textContent = CONFIG.mensajeExito;
+
+  if(CONFIG.imagenExito){
+    els.successImg.src = CONFIG.imagenExito;
+    els.successImg.classList.remove('hidden');
+  } else {
+    els.successImg.classList.add('hidden');
+  }
+
+  // reset tamaños de botones
+  els.btnSi.style.fontSize = '';
+  els.btnSi.style.padding = '';
+  els.btnNo.style.fontSize = '';
+  els.btnNo.style.padding = '';
+  els.hintText.textContent = '';
+}
+
+/* ============================================================
+   LÓGICA "NO": esquiva un poco y abre el modal con mensajes
+   ============================================================ */
+const puedeHover = window.matchMedia('(hover: hover)').matches;
+const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if(puedeHover && !prefiereMenosMovimiento){
+  els.btnNo.addEventListener('mouseenter', () => {
+    if(intentosNo >= 4) return; // deja de esquivar después de un rato
+    const wrap = els.buttonsWrap.getBoundingClientRect();
+    const btn = els.btnNo.getBoundingClientRect();
+    const maxX = wrap.width - btn.width;
+    const maxY = 40;
+    const x = (Math.random() * maxX) - (maxX / 2);
+    const y = (Math.random() * maxY) - (maxY / 2);
+    els.btnNo.style.transform = `translate(${x}px, ${y}px)`;
+  });
+}
+
+els.btnNo.addEventListener('click', () => {
+  intentosNo++;
+  els.btnNo.style.transform = '';
+
+  // el botón Sí crece, el No se achica, dentro de un límite
+  const crecimiento = Math.min(intentosNo * 3, 20);
+  const reduccion = Math.min(intentosNo * 2, 10);
+  els.btnSi.style.fontSize = `calc(1rem + ${crecimiento}px)`;
+  els.btnSi.style.padding = `calc(15px + ${crecimiento/2}px) calc(30px + ${crecimiento}px)`;
+  els.btnNo.style.fontSize = `calc(1rem - ${reduccion}px)`;
+  els.btnNo.style.padding = `calc(15px - ${reduccion/2}px) calc(30px - ${reduccion}px)`;
+
+  const lista = CONFIG.mensajesNo.length ? CONFIG.mensajesNo : ["¿Seguro/a? Inténtalo otra vez."];
+  const mensaje = lista[Math.min(intentosNo - 1, lista.length - 1)];
+  els.modalMsg.textContent = mensaje;
+  els.modalOverlay.classList.remove('hidden');
+
+  els.hintText.textContent = intentosNo > 1 ? `Van ${intentosNo} intentos... 😌` : '';
+});
+
+els.modalBack.addEventListener('click', () => {
+  els.modalOverlay.classList.add('hidden');
+});
+
+els.btnSi.addEventListener('click', () => {
+  els.screenInvite.classList.add('hidden');
+  els.screenDay.classList.remove('hidden');
+});
+
+function elegirDia(dia){
+  diaElegido = dia;
+  els.recapText.textContent = `${dia} · ${CONFIG.hora} · ${CONFIG.lugar}`;
+  els.screenDay.classList.add('hidden');
+  els.screenSuccess.classList.remove('hidden');
+  lanzarConfeti();
+}
+
+/* ============================================================
+   CONFETI
+   ============================================================ */
+function lanzarConfeti(){
+  if(prefiereMenosMovimiento) return;
+  const colores = [CONFIG.colorAcento, CONFIG.colorSecundario, '#ffffff'];
+  const cantidad = 70;
+
+  for(let i = 0; i < cantidad; i++){
+    const pieza = document.createElement('div');
+    pieza.className = 'confetti-piece';
+    const tam = 6 + Math.random() * 8;
+    pieza.style.width = tam + 'px';
+    pieza.style.height = (tam * 0.4) + 'px';
+    pieza.style.left = Math.random() * 100 + 'vw';
+    pieza.style.background = colores[Math.floor(Math.random() * colores.length)];
+    const duracion = 2.8 + Math.random() * 2.2;
+    pieza.style.animationDuration = duracion + 's';
+    pieza.style.animationDelay = (Math.random() * 0.6) + 's';
+    document.body.appendChild(pieza);
+    setTimeout(() => pieza.remove(), (duracion + 1) * 1000);
+  }
+}
+
+/* ============================================================
+   PANEL DE EDICIÓN
+   ============================================================ */
+const editorToggle = document.getElementById('editorToggle');
+const editorPanel = document.getElementById('editorPanel');
+const inp = {
+  saludo: document.getElementById('inpSaludo'),
+  hora: document.getElementById('inpHora'),
+  lugar: document.getElementById('inpLugar'),
+  pregunta: document.getElementById('inpPregunta'),
+  preguntaDia: document.getElementById('inpPreguntaDia'),
+  dias: document.getElementById('inpDias'),
+  bg1: document.getElementById('inpBg1'),
+  bg2: document.getElementById('inpBg2'),
+  accent: document.getElementById('inpAccent'),
+  secondary: document.getElementById('inpSecondary'),
+  bgImg: document.getElementById('inpBgImg'),
+  btnSiTxt: document.getElementById('inpBtnSi'),
+  btnNoTxt: document.getElementById('inpBtnNo'),
+  mensajesNo: document.getElementById('inpMensajesNo'),
+  mensajeExito: document.getElementById('inpMensajeExito'),
+  imgExito: document.getElementById('inpImgExito'),
+};
+
+function llenarPanelConConfig(){
+  inp.saludo.value = CONFIG.saludo;
+  inp.hora.value = CONFIG.hora;
+  inp.lugar.value = CONFIG.lugar;
+  inp.pregunta.value = CONFIG.preguntaAceptar;
+  inp.preguntaDia.value = CONFIG.preguntaDia;
+  inp.dias.value = CONFIG.diasOpciones.join('\n');
+  inp.bg1.value = CONFIG.colorFondo1;
+  inp.bg2.value = CONFIG.colorFondo2;
+  inp.accent.value = CONFIG.colorAcento;
+  inp.secondary.value = CONFIG.colorSecundario;
+  inp.bgImg.value = CONFIG.imagenFondo;
+  inp.btnSiTxt.value = CONFIG.textoBotonSi;
+  inp.btnNoTxt.value = CONFIG.textoBotonNo;
+  inp.mensajesNo.value = CONFIG.mensajesNo.join('\n');
+  inp.mensajeExito.value = CONFIG.mensajeExito;
+  inp.imgExito.value = CONFIG.imagenExito;
+}
+
+editorToggle.addEventListener('click', () => {
+  llenarPanelConConfig();
+  editorPanel.classList.toggle('hidden');
+});
+document.getElementById('btnCerrarPanel').addEventListener('click', () => {
+  editorPanel.classList.add('hidden');
+});
+
+document.getElementById('btnAplicar').addEventListener('click', () => {
+  CONFIG.saludo = inp.saludo.value;
+  CONFIG.hora = inp.hora.value;
+  CONFIG.lugar = inp.lugar.value;
+  CONFIG.preguntaAceptar = inp.pregunta.value;
+  CONFIG.preguntaDia = inp.preguntaDia.value;
+  CONFIG.diasOpciones = inp.dias.value.split('\n').map(s => s.trim()).filter(Boolean);
+  CONFIG.colorFondo1 = inp.bg1.value;
+  CONFIG.colorFondo2 = inp.bg2.value;
+  CONFIG.colorAcento = inp.accent.value;
+  CONFIG.colorSecundario = inp.secondary.value;
+  CONFIG.imagenFondo = inp.bgImg.value.trim();
+  CONFIG.textoBotonSi = inp.btnSiTxt.value;
+  CONFIG.textoBotonNo = inp.btnNoTxt.value;
+  CONFIG.mensajesNo = inp.mensajesNo.value.split('\n').map(s => s.trim()).filter(Boolean);
+  CONFIG.mensajeExito = inp.mensajeExito.value;
+  CONFIG.imagenExito = inp.imgExito.value.trim();
+
+  intentosNo = 0;
+  render();
+  guardarConfig();
+  els.screenSuccess.classList.add('hidden');
+  els.screenDay.classList.add('hidden');
+  els.screenInvite.classList.remove('hidden');
+});
+
+/* Inicial: primero intenta cargar cambios guardados, luego dibuja la página */
+(async function iniciar(){
+  await cargarConfig();
+  render();
+})();
+</script>
+</body>
+</html>
