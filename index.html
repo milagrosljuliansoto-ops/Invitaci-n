@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-
- 
   :root{
     --bg1:#C41E28;
     --bg2:#122C6B;
@@ -66,7 +64,6 @@
     background:linear-gradient(135deg, rgba(196,30,40,.55), rgba(18,44,107,.6));
     z-index:0;
   }
-
 
   .screen{
     position:relative;
@@ -167,6 +164,8 @@
     cursor:pointer;
     transition:transform .18s ease, box-shadow .18s ease, font-size .2s ease, padding .2s ease;
     box-shadow:4px 4px 0 var(--ink);
+    text-decoration: none;
+    display: inline-block;
   }
   .btn:focus-visible{
     outline:3px solid var(--secondary);
@@ -192,6 +191,15 @@
     color:var(--text);
   }
   .btn-dia:hover{ transform:translateY(-2px); background:var(--secondary); color:#fff; }
+
+  .btn-calendar{
+    background:#34A853;
+    color:#fff;
+    margin-top: 15px;
+    font-size: 0.95rem;
+    padding: 12px 24px;
+  }
+  .btn-calendar:hover{ transform:translateY(-2px); background:#2b8a43; }
 
   .hint{
     margin:20px 0 0;
@@ -245,7 +253,7 @@
     box-shadow:3px 3px 0 var(--ink);
   }
 
-  /* Confeti (rojo / azul / blanco) */
+  /* Confeti */
   .confetti-piece{
     position:fixed;
     top:-20px;
@@ -316,6 +324,9 @@
     <p class="recap" id="recapText"></p>
     <h1 id="successHeadline"></h1>
     <img id="successImg" class="success-img hidden" alt="">
+    <div>
+      <a id="btnCalendar" class="btn btn-calendar" href="#" target="_blank">📅 Agendar en Google Calendar</a>
+    </div>
   </main>
 
   <div class="modal-overlay hidden" id="modalOverlay">
@@ -326,7 +337,6 @@
   </div>
 
 <script>
-
 const CONFIG = {
   saludo: "Hola Luis, sé que se viene una fecha súper importante y quería preguntarte si nos animamos a salir a celebrarla.",
   hora: "8:30 pm",
@@ -341,8 +351,8 @@ const CONFIG = {
   colorTexto: "#151223",
   colorSecundario: "#1450C4",
 
-  imagenFondo: "https://img.magnific.com/vector-gratis/estilo-fondo-telarana-halloween_23-2148626623.jpg",   // URL opcional de imagen de fondo
-  imagenExito: "https://media1.tenor.com/m/l7xfj7PrNs0AAAAd/hombreara%C3%B1a-spiderman.gif",   // URL opcional de imagen/GIF para la pantalla final
+  imagenFondo: "https://img.magnific.com/vector-gratis/estilo-fondo-telarana-halloween_23-2148626623.jpg",
+  imagenExito: "https://media1.tenor.com/m/l7xfj7PrNs0AAAAd/hombreara%C3%B1a-spiderman.gif",
 
   textoBotonSi: "Sí",
   textoBotonNo: "No",
@@ -357,6 +367,7 @@ const CONFIG = {
 
   mensajeExito: "Nos vemos pronto 🕷️"
 };
+
 let intentosNo = 0;
 let diaElegido = "";
 const root = document.documentElement;
@@ -382,36 +393,8 @@ const els = {
   modalMsg: document.getElementById('modalMsg'),
   modalBack: document.getElementById('modalBack'),
   buttonsWrap: document.querySelector('#screenInvite .buttons'),
+  btnCalendar: document.getElementById('btnCalendar'),
 };
-
-
-const STORAGE_KEY = 'invitacion-config-luis';
-
-async function guardarConfig(){
-  try{
-    if(window.storage){
-      await window.storage.set(STORAGE_KEY, JSON.stringify(CONFIG), false);
-    } else if(window.localStorage){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
-    }
-  }catch(e){
-    console.warn('No se pudo guardar la configuración:', e);
-  }
-}
-
-async function cargarConfig(){
-  try{
-    if(window.storage){
-      const res = await window.storage.get(STORAGE_KEY);
-      if(res && res.value) Object.assign(CONFIG, JSON.parse(res.value));
-    } else if(window.localStorage){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) Object.assign(CONFIG, JSON.parse(raw));
-    }
-  }catch(e){
-    // no hay datos guardados todavía, o falló la lectura: se usan los valores por defecto
-  }
-}
 
 function render(){
   root.style.setProperty('--bg1', CONFIG.colorFondo1);
@@ -453,7 +436,6 @@ function render(){
     els.successImg.classList.add('hidden');
   }
 
-  // reset tamaños de botones
   els.btnSi.style.fontSize = '';
   els.btnSi.style.padding = '';
   els.btnNo.style.fontSize = '';
@@ -466,7 +448,7 @@ const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: redu
 
 if(puedeHover && !prefiereMenosMovimiento){
   els.btnNo.addEventListener('mouseenter', () => {
-    if(intentosNo >= 4) return; // deja de esquivar después de un rato
+    if(intentosNo >= 4) return;
     const wrap = els.buttonsWrap.getBoundingClientRect();
     const btn = els.btnNo.getBoundingClientRect();
     const maxX = wrap.width - btn.width;
@@ -481,7 +463,6 @@ els.btnNo.addEventListener('click', () => {
   intentosNo++;
   els.btnNo.style.transform = '';
 
-  // el botón Sí crece, el No se achica, dentro de un límite
   const crecimiento = Math.min(intentosNo * 3, 20);
   const reduccion = Math.min(intentosNo * 2, 10);
   els.btnSi.style.fontSize = `calc(1rem + ${crecimiento}px)`;
@@ -509,6 +490,11 @@ els.btnSi.addEventListener('click', () => {
 function elegirDia(dia){
   diaElegido = dia;
   els.recapText.textContent = `${dia} · ${CONFIG.hora} · ${CONFIG.lugar}`;
+  
+  let fechaNum = dia.includes("19") ? "20260819" : "20260820";
+  let urlCalendar = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Cita+especial+con+Milagros&dates=${fechaNum}T203000/${fechaNum}T220000&details=Nuestra+salida+especial&location=Ancón`;
+  els.btnCalendar.href = urlCalendar;
+
   els.screenDay.classList.add('hidden');
   els.screenSuccess.classList.remove('hidden');
   lanzarConfeti();
@@ -535,86 +521,7 @@ function lanzarConfeti(){
   }
 }
 
-
-const editorToggle = document.getElementById('editorToggle');
-const editorPanel = document.getElementById('editorPanel');
-const inp = {
-  saludo: document.getElementById('inpSaludo'),
-  hora: document.getElementById('inpHora'),
-  lugar: document.getElementById('inpLugar'),
-  pregunta: document.getElementById('inpPregunta'),
-  preguntaDia: document.getElementById('inpPreguntaDia'),
-  dias: document.getElementById('inpDias'),
-  bg1: document.getElementById('inpBg1'),
-  bg2: document.getElementById('inpBg2'),
-  accent: document.getElementById('inpAccent'),
-  secondary: document.getElementById('inpSecondary'),
-  bgImg: document.getElementById('inpBgImg'),
-  btnSiTxt: document.getElementById('inpBtnSi'),
-  btnNoTxt: document.getElementById('inpBtnNo'),
-  mensajesNo: document.getElementById('inpMensajesNo'),
-  mensajeExito: document.getElementById('inpMensajeExito'),
-  imgExito: document.getElementById('inpImgExito'),
-};
-
-function llenarPanelConConfig(){
-  inp.saludo.value = CONFIG.saludo;
-  inp.hora.value = CONFIG.hora;
-  inp.lugar.value = CONFIG.lugar;
-  inp.pregunta.value = CONFIG.preguntaAceptar;
-  inp.preguntaDia.value = CONFIG.preguntaDia;
-  inp.dias.value = CONFIG.diasOpciones.join('\n');
-  inp.bg1.value = CONFIG.colorFondo1;
-  inp.bg2.value = CONFIG.colorFondo2;
-  inp.accent.value = CONFIG.colorAcento;
-  inp.secondary.value = CONFIG.colorSecundario;
-  inp.bgImg.value = CONFIG.imagenFondo;
-  inp.btnSiTxt.value = CONFIG.textoBotonSi;
-  inp.btnNoTxt.value = CONFIG.textoBotonNo;
-  inp.mensajesNo.value = CONFIG.mensajesNo.join('\n');
-  inp.mensajeExito.value = CONFIG.mensajeExito;
-  inp.imgExito.value = CONFIG.imagenExito;
-}
-
-editorToggle.addEventListener('click', () => {
-  llenarPanelConConfig();
-  editorPanel.classList.toggle('hidden');
-});
-document.getElementById('btnCerrarPanel').addEventListener('click', () => {
-  editorPanel.classList.add('hidden');
-});
-
-document.getElementById('btnAplicar').addEventListener('click', () => {
-  CONFIG.saludo = inp.saludo.value;
-  CONFIG.hora = inp.hora.value;
-  CONFIG.lugar = inp.lugar.value;
-  CONFIG.preguntaAceptar = inp.pregunta.value;
-  CONFIG.preguntaDia = inp.preguntaDia.value;
-  CONFIG.diasOpciones = inp.dias.value.split('\n').map(s => s.trim()).filter(Boolean);
-  CONFIG.colorFondo1 = inp.bg1.value;
-  CONFIG.colorFondo2 = inp.bg2.value;
-  CONFIG.colorAcento = inp.accent.value;
-  CONFIG.colorSecundario = inp.secondary.value;
-  CONFIG.imagenFondo = inp.bgImg.value.trim();
-  CONFIG.textoBotonSi = inp.btnSiTxt.value;
-  CONFIG.textoBotonNo = inp.btnNoTxt.value;
-  CONFIG.mensajesNo = inp.mensajesNo.value.split('\n').map(s => s.trim()).filter(Boolean);
-  CONFIG.mensajeExito = inp.mensajeExito.value;
-  CONFIG.imagenExito = inp.imgExito.value.trim();
-
-  intentosNo = 0;
-  render();
-  guardarConfig();
-  els.screenSuccess.classList.add('hidden');
-  els.screenDay.classList.add('hidden');
-  els.screenInvite.classList.remove('hidden');
-});
-
-/* Inicial: primero intenta cargar cambios guardados, luego dibuja la página */
-(async function iniciar(){
-  await cargarConfig();
-  render();
-})();
+render();
 </script>
 </body>
 </html>
