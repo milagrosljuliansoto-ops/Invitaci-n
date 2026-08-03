@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Una pregunta para ti</title>
+<title>Una pregunta para ti 🕷️</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,6 +28,7 @@
     overflow-x:hidden;
   }
 
+  /* Fondo con GIF animado y capa de color para que resalte la tarjeta */
   body{
     min-height:100vh;
     display:flex;
@@ -35,39 +36,25 @@
     justify-content:center;
     position:relative;
     padding:24px;
-    background:
-      linear-gradient(135deg, var(--bg1) 0%, var(--bg1) 46%, var(--bg2) 54%, var(--bg2) 100%);
-    background-attachment:fixed;
-  }
-
-  /* puntos de cómic (halftone) */
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background-image: radial-gradient(rgba(255,255,255,.16) 2px, transparent 2.4px);
-    background-size:16px 16px;
-    z-index:0;
-    pointer-events:none;
-  }
-
-  body.has-image{
-    background-image: var(--bg-image);
+    background-image: url("https://media.giphy.com/media/6GfyBJHx5qmJy/giphy.gif");
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
+    background-attachment: fixed;
   }
-  body.has-image::after{
+
+  body::after{
     content:"";
     position:fixed;
     inset:0;
-    background:linear-gradient(135deg, rgba(196,30,40,.55), rgba(18,44,107,.6));
+    background:linear-gradient(135deg, rgba(196,30,40,.65), rgba(18,44,107,.75));
     z-index:0;
+    pointer-events: none;
   }
 
   .screen{
     position:relative;
-    z-index:1;
+    z-index:2;
     width:100%;
     max-width:480px;
     background:#FBF6EC;
@@ -75,7 +62,13 @@
     border-radius:20px;
     padding:44px 32px;
     text-align:center;
-    box-shadow:10px 10px 0 var(--ink);
+    box-shadow:12px 12px 0 var(--ink);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
 
   .hidden{ display:none !important; }
@@ -94,16 +87,25 @@
     margin:0 0 16px;
   }
 
+  /* Título principal en grande con fuente Bangers */
   h1{
     font-family:'Bangers', cursive;
     font-weight:400;
-    letter-spacing:.03em;
-    font-size:clamp(1.7rem, 6.4vw, 2.5rem);
-    line-height:1.2;
-    margin:0 0 18px;
+    letter-spacing:.05em;
+    font-size:clamp(2.8rem, 9vw, 4rem);
+    line-height:1.1;
+    margin:0 0 12px;
     color:var(--accent);
-    -webkit-text-stroke:1.2px var(--ink);
-    text-shadow:2px 2px 0 var(--ink);
+    -webkit-text-stroke:1.5px var(--ink);
+    text-shadow:3px 3px 0 var(--ink);
+  }
+
+  .subtitulo-invitacion {
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0 0 20px;
+    line-height: 1.4;
   }
 
   .detalles{
@@ -214,7 +216,7 @@
     position:fixed;
     inset:0;
     z-index:5;
-    background:rgba(11,11,18,.55);
+    background:rgba(11,11,18,.6);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -290,6 +292,29 @@
     margin:10px 0 4px;
   }
 
+  /* Botón flotante para la música por si el navegador bloquea la reproducción automática */
+  .music-control {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    font-size: 22px;
+    transition: transform 0.2s;
+  }
+  .music-control:hover {
+    transform: scale(1.1);
+  }
+
   @media (prefers-reduced-motion: reduce){
     .confetti-piece{ animation:none !important; }
   }
@@ -297,9 +322,18 @@
 </head>
 <body>
 
+  <!-- Reproductor de YouTube oculto para que suene Sunflower -->
+  <div style="display:none;">
+    <iframe id="youtubeAudio" width="300" height="150" src="https://www.youtube.com/embed/ApXoWvfEYVU?autoplay=1&loop=1&playlist=ApXoWvfEYVU" frameborder="0" allow="autoplay"></iframe>
+  </div>
+
+  <!-- Botón flotante de música -->
+  <div class="music-control" id="musicToggle" title="Pausar/Reproducir música">🎵</div>
+
   <main class="screen" id="screenInvite">
     <p class="eyebrow">Alerta arácnida</p>
     <h1 id="headline"></h1>
+    <p class="subtitulo-invitacion" id="subtituloText"></p>
     <div class="detalles">
       <div class="detalle"><span class="k">Hora</span><span class="v" id="detalleHora"></span></div>
       <div class="detalle"><span class="k">Dónde</span><span class="v" id="detalleLugar"></span></div>
@@ -325,7 +359,7 @@
     <h1 id="successHeadline"></h1>
     <img id="successImg" class="success-img hidden" alt="">
     <div>
-      <a id="btnCalendar" class="btn btn-calendar" href="#" target="_blank"> Agendar en Google Calendar</a>
+      <a id="btnCalendar" class="btn btn-calendar" href="#" target="_blank">📅 Agendar en Google Calendar</a>
     </div>
   </main>
 
@@ -339,7 +373,7 @@
 <script>
 const CONFIG = {
   saludo: "Holiii Luis",
-   <p class="subfrase">Sé que se viene una fecha súper importante y quería celebrarla contigo.</p>
+  subtitulo: "Sé que se viene una fecha súper importante y quería celebrarla contigo.",
   hora: "8:30 pm",
   lugar: "Ancón",
   preguntaAceptar: "¿Aceptas mi invitación?",
@@ -352,7 +386,6 @@ const CONFIG = {
   colorTexto: "#151223",
   colorSecundario: "#1450C4",
 
-  imagenFondo: "https://img.magnific.com/vector-gratis/estilo-fondo-telarana-halloween_23-2148626623.jpg",
   imagenExito: "https://media1.tenor.com/m/l7xfj7PrNs0AAAAd/hombreara%C3%B1a-spiderman.gif",
 
   textoBotonSi: "Sí",
@@ -372,10 +405,10 @@ const CONFIG = {
 let intentosNo = 0;
 let diaElegido = "";
 const root = document.documentElement;
-const body = document.body;
 
 const els = {
   headline: document.getElementById('headline'),
+  subtituloText: document.getElementById('subtituloText'),
   detalleHora: document.getElementById('detalleHora'),
   detalleLugar: document.getElementById('detalleLugar'),
   preguntaText: document.getElementById('preguntaText'),
@@ -395,23 +428,17 @@ const els = {
   modalBack: document.getElementById('modalBack'),
   buttonsWrap: document.querySelector('#screenInvite .buttons'),
   btnCalendar: document.getElementById('btnCalendar'),
+  musicToggle: document.getElementById('musicToggle'),
+  youtubeAudio: document.getElementById('youtubeAudio'),
 };
 
 function render(){
-  root.style.setProperty('--bg1', CONFIG.colorFondo1);
-  root.style.setProperty('--bg2', CONFIG.colorFondo2);
   root.style.setProperty('--accent', CONFIG.colorAcento);
   root.style.setProperty('--text', CONFIG.colorTexto);
   root.style.setProperty('--secondary', CONFIG.colorSecundario);
 
-  if(CONFIG.imagenFondo){
-    root.style.setProperty('--bg-image', `url("${CONFIG.imagenFondo}")`);
-    body.classList.add('has-image');
-  } else {
-    body.classList.remove('has-image');
-  }
-
   els.headline.textContent = CONFIG.saludo;
+  els.subtituloText.textContent = CONFIG.subtitulo;
   els.detalleHora.textContent = CONFIG.hora;
   els.detalleLugar.textContent = CONFIG.lugar;
   els.preguntaText.textContent = CONFIG.preguntaAceptar;
@@ -443,6 +470,20 @@ function render(){
   els.btnNo.style.padding = '';
   els.hintText.textContent = '';
 }
+
+// Control del botón de música
+let musicaActiva = true;
+els.musicToggle.addEventListener('click', () => {
+  if (musicaActiva) {
+    els.youtubeAudio.src = "";
+    els.musicToggle.textContent = "🔇";
+    musicaActiva = false;
+  } else {
+    els.youtubeAudio.src = "https://www.youtube.com/embed/ApXoWvfEYVU?autoplay=1&loop=1&playlist=ApXoWvfEYVU";
+    els.musicToggle.textContent = "🎵";
+    musicaActiva = true;
+  }
+});
 
 const puedeHover = window.matchMedia('(hover: hover)').matches;
 const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
