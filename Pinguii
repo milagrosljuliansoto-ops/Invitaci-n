@@ -9,11 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 
-  /* ======================================================
-     ESTOS VALORES SE SOBREESCRIBEN AUTOMÁTICAMENTE
-     CON EL OBJETO "CONFIG" DEL SCRIPT. NO ES NECESARIO
-     TOCAR ESTO A MANO.
-     ====================================================== */
   :root{
     --bg1:#C41E28;
     --bg2:#122C6B;
@@ -522,16 +517,14 @@
   </div>
 
 <script>
-/* ============================================================
-   CONFIGURACIÓN — edita libremente estos valores
-   ============================================================ */
+
 const CONFIG = {
-  saludo: "Hola Luis, sé que se viene una fecha súper importante y quería preguntarte si nos animamos a salir a celebrarla.",
+  saludo: "Hola Luis, sé que se viene una fecha súper importante y quería celebrarla contigo.",
   hora: "8:30 pm",
-  lugar: "Ancón",
+  lugar: "Playa",
   preguntaAceptar: "¿Aceptas mi invitación?",
   preguntaDia: "Bueno, ahora elegí el día:",
-  diasOpciones: ["19 de agosto", "20 de agosto"],
+  diasOpciones: ["00 de agosto", "00 de agosto"],
 
   colorFondo1: "#C41E28",
   colorFondo2: "#122C6B",
