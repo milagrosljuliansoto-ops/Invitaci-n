@@ -254,7 +254,7 @@
     background:#fff;
     border:5px solid var(--ink);
     border-radius:20px;
-    padding:30px 26px;
+    padding:26px 22px;
     max-width:380px;
     text-align:center;
     box-shadow:8px 8px 0 var(--ink);
@@ -265,7 +265,16 @@
   .modal p{
     font-size:1.05rem;
     font-weight:700;
-    margin:0 0 20px;
+    margin:0 0 14px;
+  }
+
+  /* Estilo para el GIF de los pingüinos dentro del modal */
+  .modal-gif {
+    max-width: 140px;
+    height: auto;
+    border-radius: 10px;
+    border: 2.5px solid var(--ink);
+    margin-bottom: 14px;
   }
 
   .modal button{
@@ -381,9 +390,13 @@
     </div>
   </main>
 
+  <!-- Modal con el GIF de los pingüinos incluidos -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal">
       <p id="modalMsg"></p>
+      <div>
+        <img src="https://media.tenor.com/jcxRsvCzo5cAAAAM/pinguim-fofo.gif" class="modal-gif" alt="Pingüinos tiernos">
+      </div>
       <button id="modalBack">Volver a elegir</button>
     </div>
   </div>
@@ -447,7 +460,6 @@ const els = {
   spotifyWidget: document.getElementById('spotifyWidget')
 };
 
-// Truco para activar la música con el primer clic en cualquier parte de la página
 let musicStarted = document.body.addEventListener('click', () => {
   if (!window.musicPlaying) {
     window.musicPlaying = true;
